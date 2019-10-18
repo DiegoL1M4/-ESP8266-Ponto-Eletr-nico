@@ -34,15 +34,7 @@ void setup()
 
 // ############### LOOP ############### //
 void loop() {
-  // Look for new cards
-  if ( ! mfrc522.PICC_IsNewCardPresent()) {
-    return;
-  }
   
-  // Select one of the cards
-  if ( ! mfrc522.PICC_ReadCardSerial()) {
-    return;
-  }
 
   if(digitalRead(D0)==0)
   {
@@ -98,10 +90,19 @@ void loop() {
 }
 
 
+void rfid() {
+  // Look for new cards
+  if ( ! mfrc522.PICC_IsNewCardPresent()) {
+    return;
+  }
+  
+  // Select one of the cards
+  if ( ! mfrc522.PICC_ReadCardSerial()) {
+    return;
+  }
+}
 
-
-void rtc()  
-{
+void rtc() {
   // Le as informacoes do CI
   myRTC.updateTime(); 
 
