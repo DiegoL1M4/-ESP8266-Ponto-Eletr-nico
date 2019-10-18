@@ -1,34 +1,39 @@
-// Bibliotecas
+// ############### LOOP ############### // ResInfo
 #include <SPI.h>
-#include <MFRC522.h> //RFID
-#include <Wire.h> //I2C
-#include <LiquidCrystal_I2C.h> //LCD
-#include <virtuabotixRTC.h> //RTC
+#include <MFRC522.h>           // RFID
+#include <Wire.h>              // I2C
+#include <LiquidCrystal_I2C.h> // LCD
+#include <virtuabotixRTC.h>    // RTC
 
 // Pinos
-#define SS_PIN  D3 //RFID
-#define RST_PIN D0 //RFID
+#define SS_PIN  D3 // RFID
+#define RST_PIN A0 // RFID
+#define BNT_1   D  // Botão de ação 1
 
 // Objetos
-MFRC522 mfrc522(SS_PIN, RST_PIN);   // Instância RFID.
+MFRC522 mfrc522(SS_PIN, RST_PIN);                      // Instância RFID.
 LiquidCrystal_I2C lcd(0x27,2,1,0,4,5,6,7,3, POSITIVE); // Instância LCD
-virtuabotixRTC myRTC(D4, D8, D9); // Instância RTC
+virtuabotixRTC myRTC(D4, D8, D9);                      // Instância RTC
 
+// h
 int statuss = 0;
 int out = 0;
 
+// ############### SETUP ############### //
 void setup() 
 {
-  Serial.begin(115200);   // Initiate a serial communication
-  SPI.begin();      // Initiate  SPI bus
+  Serial.begin(115200); // Initiate a serial communication
+  SPI.begin();          // Initiate  SPI bus
   
-  mfrc522.PCD_Init();   // Initiate MFRC522
-  lcd.begin (16,2); // inicializa o display (16 colunas x 2 linhas)
-  myRTC.setDS1302Time(21, 55, 23, 5, 21, 06, 2018); // inicia o rtc
+  mfrc522.PCD_Init();   // Inicializa o MFRC522
+  lcd.begin (16,2);     // Inicializa o Display (16 colunas x 2 linhas)
+  myRTC.setDS1302Time(21, 55, 23, 5, 21, 06, 2018); // Inicializa o RTC
+
+  pinMode(D0, INPUT);
 }
 
-void loop() 
-{
+// ############### LOOP ############### //
+void loop() {
   // Look for new cards
   if ( ! mfrc522.PICC_IsNewCardPresent()) {
     return;
@@ -37,6 +42,15 @@ void loop()
   // Select one of the cards
   if ( ! mfrc522.PICC_ReadCardSerial()) {
     return;
+  }
+
+  if(digitalRead(D0)==0)
+  {
+     Serial.println("Botão não pressionado");
+  }
+  else
+  {
+     Serial.println("Botão pressionado");
   }
   
   //Show UID on serial monitor
@@ -63,7 +77,8 @@ void loop()
     lcd.print("Parabéns");
     lcd.setCursor(0,1);
     lcd.print("VALEU!!!");
-    
+
+    Serial.print("Correto");
     delay(3000); //intervalo de 1s
     lcd.setBacklight(LOW);
   } else {
@@ -77,6 +92,7 @@ void loop()
     delay(3000); //intervalo de 1s
     lcd.setBacklight(LOW);
 
+    Serial.print("Erro");
     rtc();
   }
 }
