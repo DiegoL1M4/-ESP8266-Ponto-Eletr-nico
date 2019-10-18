@@ -18,6 +18,7 @@ virtuabotixRTC myRTC(D4, D8, D9);                      // Instância RTC
 // h
 int statuss = 0;
 int out = 0;
+int cont = 0;
 
 // ############### SETUP ############### //
 void setup() 
@@ -34,17 +35,46 @@ void setup()
 
 // ############### LOOP ############### //
 void loop() {
-  
 
-  if(digitalRead(D0)==0)
-  {
-     Serial.println("Botão não pressionado");
+  // ### Tela 1: Tela Inicial
+  if(cont == 0) {
+    Serial.println("Nome Empresa");
+    cont = 0;
+    rtc();
   }
-  else
-  {
-     Serial.println("Botão pressionado");
+  cont += 1;
+  delay(100);
+
+  // ### Tela 2: Menu 1 - 
+  if(digitalRead(D0)==1) {
+      Serial.println("1 - Registrar Horário");
+      delay(1000);
+      for(int k = 0; k < 100; k++){
+          delay(100);
+
+          // ### Tela 3: Menu 2 - 
+          if(digitalRead(D0)==1) {
+              Serial.println("2 - Cadastrar Usuário");
+              delay(1000);
+              for(int k = 0; k < 100; k++){
+                  delay(100);
+
+                  // ### Tela 4: Menu 3 - 
+                  if(digitalRead(D0)==1) {
+                      Serial.println("3 - Voltar");
+                      delay(1000);
+                      for(int k = 0; k < 100; k++){
+                          delay(30);
+                      }
+                  }
+              }
+          }
+      }
   }
-  
+
+}
+
+void verifica() {
   //Show UID on serial monitor
   Serial.println();
   Serial.print(" UID tag :");
@@ -88,7 +118,6 @@ void loop() {
     rtc();
   }
 }
-
 
 void rfid() {
   // Look for new cards
@@ -139,7 +168,6 @@ void rtc() {
   }
   Serial.println(myRTC.seconds);
 
-  delay( 1000);
 }
 
 void imprime_dia_da_semana(int dia)
