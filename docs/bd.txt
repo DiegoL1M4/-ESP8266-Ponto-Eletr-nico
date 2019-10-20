@@ -1,0 +1,27 @@
+CREATE DATABASE pontoEletronico;
+
+CREATE TABLE usuario (
+	id_usuario serial,
+	nome varchar(100),
+	tagRFID ,
+	PRIMARY KEY(id_usuario)
+)
+
+CREATE TABLE registro (
+	id_registro serial,
+	data ,
+	tipo ,
+	PRIMARY KEY(id_registro)
+)
+
+CREATE TABLE tipo (
+	id_tipo integer,
+	nome ,
+	PRIMARY KEY(id_tipo)
+)
+
+INSERT INTO tipo VALUES 
+	(1, 'entrada'), 
+	(2, 'almoço - saída'), 
+	(3, 'almoço - retorno'), 
+	(4, 'saída');
