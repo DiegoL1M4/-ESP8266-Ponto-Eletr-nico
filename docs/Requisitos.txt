@@ -1,0 +1,8 @@
+
+Requisitos do ESP:
+	Cadastrar Usuários
+	Registrar Horários
+
+Requisitos SPA:
+	Ver todos os Usuários
+	Ver todos os Registros

@@ -1,5 +1,5 @@
 package com.pontoeletronico._projectapirest.entities;
 
-public class registro {
+public class TipoEntity {
 
 }

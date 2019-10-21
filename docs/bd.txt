@@ -1,27 +1,30 @@
-CREATE DATABASE pontoEletronico;
+CREATE DATABASE ponto-eletronico;
 
 CREATE TABLE usuario (
 	id_usuario serial,
 	nome varchar(100),
-	tagRFID ,
+	tagRFID varchar(8),
 	PRIMARY KEY(id_usuario)
-)
+);
 
-CREATE TABLE registro (
-	id_registro serial,
-	data ,
-	tipo ,
-	PRIMARY KEY(id_registro)
-)
+INSERT INTO usuario (nome, tagRFID) VALUES ('Diego Lima', '2C8FAA59');
 
 CREATE TABLE tipo (
 	id_tipo integer,
-	nome ,
+	nome varchar(20),
 	PRIMARY KEY(id_tipo)
-)
+);
 
 INSERT INTO tipo VALUES 
 	(1, 'entrada'), 
 	(2, 'almoço - saída'), 
 	(3, 'almoço - retorno'), 
 	(4, 'saída');
+	
+CREATE TABLE registro (
+	id_registro serial,
+	data date,
+	id_tipo int,
+	PRIMARY KEY(id_registro),
+	FOREIGN KEY (id_tipo) REFERENCES tipo(id_tipo)
+);
