@@ -23,8 +23,9 @@ INSERT INTO tipo VALUES
 	
 CREATE TABLE registro (
 	id_registro serial,
-	data date,
+	tagRFID varchar(8),
 	id_tipo int,
+	data date,
 	PRIMARY KEY(id_registro),
 	FOREIGN KEY (id_tipo) REFERENCES tipo(id_tipo)
 );
