@@ -9,8 +9,6 @@ public class RegistroForm {
 	@NotNull
 	private String tagRFID;
 	@NotNull
-	private long tipo;
-	@NotNull
 	private LocalDateTime data;
 	
 	public String getTagRFID() {
@@ -18,12 +16,6 @@ public class RegistroForm {
 	}
 	public void setTagRFID(String tagRFID) {
 		this.tagRFID = tagRFID;
-	}
-	public long getTipo() {
-		return tipo;
-	}
-	public void setTipo(long tipo) {
-		this.tipo = tipo;
 	}
 	public LocalDateTime getData() {
 		return data;

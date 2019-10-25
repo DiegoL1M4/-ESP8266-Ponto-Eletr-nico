@@ -6,4 +6,6 @@ import com.pontoeletronico.entities.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
+	Usuario findByTagRFID(String tagRFID);
+	
 }

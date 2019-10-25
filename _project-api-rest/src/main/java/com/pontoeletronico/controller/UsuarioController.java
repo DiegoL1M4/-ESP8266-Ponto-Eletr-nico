@@ -34,10 +34,15 @@ public class UsuarioController {
 	@PostMapping
 	@Transactional
 	public ResponseEntity<Usuario> cadastrar(@RequestBody @Valid UsuarioForm form, UriComponentsBuilder uriBuilder) {
-		Usuario user = new Usuario(form.getNome(), form.getTagRFID());
-		usuarioRepository.save(user);
+		Usuario userTest = usuarioRepository.findByTagRFID(form.getTagRFID());
 		
-		URI uri = uriBuilder.path("/usuario/{id}").buildAndExpand(user.getId_usuario()).toUri();
-		return ResponseEntity.created(uri).body(user);
+		if(userTest == null) {
+			Usuario user = new Usuario(form.getNome(), form.getTagRFID());
+			usuarioRepository.save(user);
+			
+			URI uri = uriBuilder.path("/usuario/{id}").buildAndExpand(user.getId_usuario()).toUri();
+			return ResponseEntity.created(uri).body(user);
+		}
+		return ResponseEntity.badRequest().body(new Usuario());
 	}
 }
