@@ -6,3 +6,8 @@ Requisitos do ESP:
 Requisitos SPA:
 	Ver todos os Usuários
 	Ver todos os Registros
+
+Gerais:
+	Obter nome da empresa
+	Verificar a existência de cartão
+	Limitar a 4 registros por dia: SELECT count(id_registro) FROM registro where data = CURRENT_DATE AND tag_rfid = '12345678';

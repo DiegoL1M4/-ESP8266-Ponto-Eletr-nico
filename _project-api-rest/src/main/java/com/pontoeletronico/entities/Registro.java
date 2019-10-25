@@ -12,38 +12,36 @@ public class Registro {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id_registro;
-	private String tagRFID;
-	private int tipo;
+	private String tagRfid;
+	private long id_tipo;
 	private LocalDateTime data;
 	
 	public Registro() { }
 	
-	public Registro(String tagRFID, int tipo, LocalDateTime data) {
-		this.tagRFID = tagRFID;
-		this.tipo = tipo;
+	public Registro(String tagRfid, long id_tipo, LocalDateTime data) {
+		this.tagRfid = tagRfid;
+		this.id_tipo = id_tipo;
 		this.data = data;
-		System.out.println(data);
 	}
 
-	public String getTagRFID() {
-		return tagRFID;
+	public String getTag_rfid() {
+		return tagRfid;
 	}
 
-	public void setTagRFID(String tagRFID) {
-		this.tagRFID = tagRFID;
+	public void setTag_rfid(String tagRfid) {
+		this.tagRfid = tagRfid;
 	}
-
 	public int getId_registro() {
 		return id_registro;
 	}
 	public void setId_registro(int id_registro) {
 		this.id_registro = id_registro;
 	}
-	public int getTipo() {
-		return tipo;
+	public long getId_tipo() {
+		return id_tipo;
 	}
-	public void setTipo(int tipo) {
-		this.tipo = tipo;
+	public void setId_tipo(long id_tipo) {
+		this.id_tipo = id_tipo;
 	}
 	public LocalDateTime getData() {
 		return data;

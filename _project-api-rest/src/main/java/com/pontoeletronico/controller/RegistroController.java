@@ -1,6 +1,7 @@
 package com.pontoeletronico.controller;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -33,10 +34,18 @@ public class RegistroController {
 	@PostMapping
 	@Transactional
 	public ResponseEntity<Registro> cadastrar(@RequestBody @Valid RegistroForm form, UriComponentsBuilder uriBuilder) {
-		Registro register = new Registro(form.getTagRFID(), 1, form.getData());
-		registroRepository.save(register);
+		long contReg = registroRepository.countByDataAndTagRfid(LocalDateTime.now(), form.getTagRFID());
 		
-		URI uri = uriBuilder.path("/registro/{id}").buildAndExpand(register.getId_registro()).toUri();
-		return ResponseEntity.created(uri).body(register);
+		if(contReg < 4) {
+			Registro register = new Registro(form.getTagRFID(), contReg + 1, form.getData());
+			registroRepository.save(register);
+			
+			URI uri = uriBuilder.path("/registro/{id}").buildAndExpand(register.getId_registro()).toUri();
+			return ResponseEntity.created(uri).body(register);
+		}
+		
+		return ResponseEntity.badRequest().body(new Registro());
+		
+		
 	}
 }

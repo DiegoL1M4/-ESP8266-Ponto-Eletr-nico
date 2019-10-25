@@ -13,9 +13,7 @@ public class Usuario {
 	private String nome;
 	private String tagRFID;
 	
-	public Usuario() {
-		
-	}
+	public Usuario() { }
 	
 	public Usuario(String nome, String tagRFID) {
 		this.nome = nome;

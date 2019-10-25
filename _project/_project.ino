@@ -47,10 +47,13 @@ void setup() {
       delay(500);
       Serial.print("."); // Enquanto a ligação não for efectuada com sucesso é apresentado no monitor série uma sucessão de “.”
 
-      if(cont == 20)
+      if(cont == 50)
         break;
   }
-  Serial.println("\nWiFi connected");
+  if(WiFi.status() == WL_CONNECTED)
+      Serial.println("\nWiFi connected\n");
+  else
+      Serial.println("\nWiFi not connected\n");
   
   // Outras Configurações
   SPI.begin();          // Inicializa  SPI bus
@@ -81,7 +84,7 @@ void loop() {
           rfid(0);
           delay(100);
           if(tag_RFID != ""){
-            String json = "{\"tagRFID\": \"" + tag_RFID + "\", \"data\": \"" + data + "\"}";
+            String json = "{\"tagRFID\": \"" + tag_RFID + "\", \"tipo\": \"1\", \"data\": \"" + data + "\"}";
             postHTTP("registro", json);
             break;
           }
@@ -95,7 +98,7 @@ void loop() {
           rfid(1);
           delay(100);
           if(tag_RFID != ""){
-            String json = "{\"nome\": \"Teste\", \"tagRFID\": \"" + tag_RFID + "\"}";
+            String json = "{\"nome\": \"Novo Usuario\", \"tagRFID\": \"" + tag_RFID + "\"}";
             postHTTP("usuario", json);
             break;
           }
@@ -275,8 +278,7 @@ void rtc() {
   fullData.concat(myRTC.seconds < 10 ? ":0" : ":");
   fullData.concat(myRTC.seconds);
 
-  Serial.println(fullData);
-  Serial.println(data);
+  Serial.println(fullData + "\n");
 }
 
 String imprime_dia_da_semana(int dia) {
