@@ -24,9 +24,9 @@ int cont = 0;
 int found = 0;
 int flagChoice = 0;
 
+String nome;
 String data =  "";
 String tag_RFID;
-String bd[] = {"2C 8F AA 59", ""};
 
 // ############### SETUP ############### //
 void setup() {
@@ -62,6 +62,18 @@ void setup() {
 
   // Botão de ação
   pinMode(D0, INPUT);
+
+  // Nome da empresa
+  /*String json = getHTTP("general/nome");
+        
+  if(json == "bad") {
+    Serial.println("Deu ruim");
+  }
+  StaticJsonDocument<200> doc;
+  deserializeJson(doc, json);*/
+
+  nome = getHTTP("general/nome");
+  
 }
 
 
@@ -71,12 +83,13 @@ void loop() {
   switch (flagChoice) {
     case 0: // Tela 1
         if (cont == 10) {
-          Serial.println("Nome Empresa");
+          Serial.println(nome);
           cont = 0;
           rtc();
         }
         cont += 1;
         delay(100);
+        lcd.setBacklight(LOW);
         break;
     case 1: // Tela 2
         Serial.println("Aproxime o cartão!");
@@ -104,6 +117,8 @@ void loop() {
             int code = postHTTP("usuario", json);
             if(code == 700)
               Serial.println("Cartão já cadastrado!");
+            else
+              Serial.println("Registro efetuado com sucesso!");
             break;
           }
         }
@@ -111,7 +126,24 @@ void loop() {
         delay(1000);
         break;
     case 3: // Tela 4
-        myRTC.setDS1302Time(21, 55, 23, 5, 21, 06, 2018); // Inicializa o RTC
+        String json = getHTTP("general/data");
+        
+        if(json == "bad") {
+          Serial.println("Deu ruim");
+          break;
+        }
+        StaticJsonDocument<200> doc;
+        deserializeJson(doc, json);
+        
+        int h = doc["h"];
+        int m = doc["m"];
+        int s = doc["s"];
+        int wk = doc["wk"];
+        int d = doc["d"];
+        int mth = doc["mth"];
+        int a = doc["a"];
+        
+        myRTC.setDS1302Time(s, m, h, wk, d, mth, a); // Inicializa o RTC
         break;
   }
 
@@ -121,6 +153,7 @@ void loop() {
 
   // ### Tela 2: Menu 1 -
   if (digitalRead(D0) == 1) {
+    lcd.setBacklight(HIGH);
     Serial.println("1 - Registrar Horário");
     flagChoice = 1;
     delay(300);
@@ -150,6 +183,7 @@ void loop() {
                 delay(300);
                 for (int k = 0; k < 1; k++) {
                   delay(100);
+                  break;
                 }
               } // ### END: Tela 5
             }
@@ -207,7 +241,7 @@ void verificacao() {
 
 // ############### Funções HTTP
 int postHTTP(String path, String json) {
-    HttpClient http;    //Declare object of class HTTPClient
+    HTTPClient http;    //Declare object of class HTTPClient
     
     http.begin("http://192.168.25.18:8080/" + path);      //Specify request destination
     http.addHeader("Content-Type", "application/json");  //Specify content-type header
@@ -223,15 +257,27 @@ int postHTTP(String path, String json) {
     return httpCode;
 }
 
-void getHTTP() {
-  HttpClient http;
-  http.get("http://localhost:8080/usuario");
+String getHTTP(String path) {
+  
+    HTTPClient http;
+    String payload;
+    
+    http.begin("http://192.168.25.18:8080/" + path); //Specify the URL
+    int httpCode = http.GET();                                        //Make the request
+    
+    if (httpCode > 0) { //Check for the returning code
+        payload = http.getString();
+        Serial.println(httpCode);
+        Serial.println(payload);
+    } else {
+        Serial.println("Error on HTTP request");
+        http.end();
+        return "bad";
+    }
+    
+    http.end(); //Free the resources
 
-  while (http.available()) {
-    char c = http.read();
-    Serial.print(c);
-  }
-  Serial.flush();
+    return payload;
 
 }
 

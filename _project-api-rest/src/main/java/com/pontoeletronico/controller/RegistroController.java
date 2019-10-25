@@ -46,6 +46,5 @@ public class RegistroController {
 		
 		return ResponseEntity.status(700).body(new Registro());
 		
-		
 	}
 }

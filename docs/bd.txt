@@ -29,3 +29,12 @@ CREATE TABLE registro (
 	PRIMARY KEY(id_registro),
 	FOREIGN KEY (id_tipo) REFERENCES tipo(id_tipo)
 );
+
+CREATE TABLE generalsetup (
+	id_setup serial,
+	nome varchar(50),
+	valor varchar(200),
+	PRIMARY KEY(id_setup)
+);
+
+INSERT INTO generalsetup (nome, valor) VALUES ('nome_empresa','Nome da Empresa');
