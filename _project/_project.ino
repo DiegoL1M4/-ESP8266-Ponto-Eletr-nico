@@ -84,8 +84,10 @@ void loop() {
           rfid(0);
           delay(100);
           if(tag_RFID != ""){
-            String json = "{\"tagRFID\": \"" + tag_RFID + "\", \"tipo\": \"1\", \"data\": \"" + data + "\"}";
-            postHTTP("registro", json);
+            String json = "{\"tagRFID\": \"" + tag_RFID + "\", \"data\": \"" + data + "\"}";
+            int code = postHTTP("registro", json);
+            if(code == 700)
+              Serial.println("Todos os registros já realizados!");
             break;
           }
         }
@@ -99,7 +101,9 @@ void loop() {
           delay(100);
           if(tag_RFID != ""){
             String json = "{\"nome\": \"Novo Usuario\", \"tagRFID\": \"" + tag_RFID + "\"}";
-            postHTTP("usuario", json);
+            int code = postHTTP("usuario", json);
+            if(code == 700)
+              Serial.println("Cartão já cadastrado!");
             break;
           }
         }
@@ -120,7 +124,7 @@ void loop() {
     Serial.println("1 - Registrar Horário");
     flagChoice = 1;
     delay(300);
-    for (int k = 0; k < 20; k++) {
+    for (int k = 0; k < 10; k++) {
       delay(100);
 
       // ### Tela 3: Menu 2 -
@@ -128,7 +132,7 @@ void loop() {
         Serial.println("2 - Cadastrar Usuário");
         flagChoice = 2;
         delay(300);
-        for (int k = 0; k < 20; k++) {
+        for (int k = 0; k < 10; k++) {
           delay(100);
 
           // ### Tela 4: Menu 3 -
@@ -136,7 +140,7 @@ void loop() {
             Serial.println("3 - Modificar Hora");
             flagChoice = 3;
             delay(300);
-            for (int k = 0; k < 20; k++) {
+            for (int k = 0; k < 10; k++) {
               delay(100);
 
               // ### Tela 5: Menu 4 -
@@ -202,8 +206,8 @@ void verificacao() {
 
 
 // ############### Funções HTTP
-void postHTTP(String path, String json) {
-    HTTPClient http;    //Declare object of class HTTPClient
+int postHTTP(String path, String json) {
+    HttpClient http;    //Declare object of class HTTPClient
     
     http.begin("http://192.168.25.18:8080/" + path);      //Specify request destination
     http.addHeader("Content-Type", "application/json");  //Specify content-type header
@@ -215,6 +219,20 @@ void postHTTP(String path, String json) {
     Serial.println(payload);    //Print request response payload
     
     http.end();  //Close connection
+
+    return httpCode;
+}
+
+void getHTTP() {
+  HttpClient http;
+  http.get("http://localhost:8080/usuario");
+
+  while (http.available()) {
+    char c = http.read();
+    Serial.print(c);
+  }
+  Serial.flush();
+
 }
 
 

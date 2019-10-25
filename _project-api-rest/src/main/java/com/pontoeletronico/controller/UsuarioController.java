@@ -43,6 +43,7 @@ public class UsuarioController {
 			URI uri = uriBuilder.path("/usuario/{id}").buildAndExpand(user.getId_usuario()).toUri();
 			return ResponseEntity.created(uri).body(user);
 		}
-		return ResponseEntity.badRequest().body(new Usuario());
+		return ResponseEntity.status(700).body(new Usuario());
+
 	}
 }

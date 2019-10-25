@@ -44,7 +44,7 @@ public class RegistroController {
 			return ResponseEntity.created(uri).body(register);
 		}
 		
-		return ResponseEntity.badRequest().body(new Registro());
+		return ResponseEntity.status(700).body(new Registro());
 		
 		
 	}
