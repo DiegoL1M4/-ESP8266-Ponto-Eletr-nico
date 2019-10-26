@@ -6,7 +6,6 @@
 #include <virtuabotixRTC.h>    // RTC
 
 #include <ArduinoJson.h>       // JSON
-
 #include <ESP8266WiFi.h>       // WiFi
 #include <ESP8266HTTPClient.h>  // Client
 
@@ -21,23 +20,29 @@ virtuabotixRTC myRTC(D4, D8, D9);                              // Instância RTC
 
 // Variáveis
 int cont = 0;
+int contLight = 0;
 int found = 0;
 int flagChoice = 0;
 
-String nome;
+String nomeOrg;
 String data =  "";
 String tag_RFID;
 
 // ############### SETUP ############### //
 void setup() {
 
-  // Conexão Serial
+  // Inicialização de Modulos
   Serial.begin(115200);
+  SPI.begin();          // Inicializa  SPI bus
+  mfrc522.PCD_Init();   // Inicializa o MFRC522
+  lcd.begin (16, 2);    // Inicializa o Display (16 colunas x 2 linhas)
   delay(20);
 
   // Conexão do Wifi
   Serial.print("\n\nConnecting to "); // Mensagem apresentada no monitor série
   Serial.println(ssid); // Apresenta o nome da rede no monitor série
+  lcdPrint(ssid, 0, 1, 0);
+  lcdPrint("Conectando...", 1, 1, 0);
 
   WiFi.begin(ssid, password); // Inicia a ligação a rede
 
@@ -50,21 +55,22 @@ void setup() {
       if(cont == 50)
         break;
   }
-  if(WiFi.status() == WL_CONNECTED)
+  if(WiFi.status() == WL_CONNECTED) {
       Serial.println("\nWiFi connected\n");
-  else
+      lcdPrint("WiFi conectado!", 1, 1, 1000);
+  } else {
       Serial.println("\nWiFi not connected\n");
-  
-  // Outras Configurações
-  SPI.begin();          // Inicializa  SPI bus
-  mfrc522.PCD_Init();   // Inicializa o MFRC522
-  lcd.begin (16, 2);    // Inicializa o Display (16 colunas x 2 linhas)
+      lcdPrint("Falha no WiFi!", 1, 1, 1000);
+  }
 
   // Botão de ação
   pinMode(D0, INPUT);
 
   // Nome da empresa
-  nome = getHTTP("general/nome");
+  lcdPrint("Ponto Eletronico", 0, 1, 0);
+  lcdPrint("Carregando...", 1, 1, 0);
+  delay(3000);
+  nomeOrg = getHTTP("general/nome");
   
 }
 
@@ -72,19 +78,27 @@ void setup() {
 
 // ############### LOOP ############### //
 void loop() {
+  
   switch (flagChoice) {
     case 0: // Tela 1
         if (cont == 10) {
-          Serial.println(nome);
+          Serial.println(nomeOrg);
+          lcdPrint(nomeOrg, 0, 1, 0);
           cont = 0;
           rtc();
+          lcdPrint(rtc(), 1, 1, 0);
         }
         cont += 1;
         delay(100);
-        lcd.setBacklight(LOW);
+
+        if(contLight == 50)
+          lcd.setBacklight(LOW);
+        else
+          contLight++;
         break;
     case 1: // Tela 2
         Serial.println("Aproxime o cartão!");
+        lcdPrint("Aprox. o cartao!", 1, 1, 0);
         for (int k = 0; k < 20; k++) {
           rfid(0);
           delay(100);
@@ -92,50 +106,54 @@ void loop() {
             String json = "{\"tagRFID\": \"" + tag_RFID + "\", \"data\": \"" + data + "\"}";
             int code = postHTTP("registro", json);
             if(code == 700)
-              Serial.println("Todos os registros já realizados!");
+              lcdPrint("Dia finalizado!", 1, 0, 1500);
+            else if (code == 201)
+              lcdPrint("Registrado!", 1, 0, 1500);
+            else
+              lcdPrint("Erro no registro", 1, 0, 1500);
             break;
           }
         }
         Serial.println("Finalizando");
-        delay(1000);
+        lcdPrint("Finalizando...", 1, 1, 1000);
         break;
     case 2: // Tela 3
         Serial.println("Aproxime o cartão!");
+        lcdPrint("Aprox. o cartao!", 1, 1, 0);
         for (int k = 0; k < 20; k++) {
           rfid(1);
           delay(100);
           if(tag_RFID != ""){
             String json = "{\"nome\": \"Novo Usuario\", \"tagRFID\": \"" + tag_RFID + "\"}";
             int code = postHTTP("usuario", json);
-            if(code == 700)
+            if(code == 700) {
               Serial.println("Cartão já cadastrado!");
-            else
+              lcdPrint(" Ja cadastrado! ", 1, 0, 1000);
+            } else {
               Serial.println("Registro efetuado com sucesso!");
+              lcdPrint(" Cartao registrado!", 1, 0, 1000);
+            }
             break;
           }
         }
         Serial.println("Finalizando");
-        delay(1000);
+        lcdPrint("Finalizando...", 1, 1, 1000);
         break;
     case 3: // Tela 4
         String json = getHTTP("general/data");
-        
-        if(json == "bad") {
-          Serial.println("Deu ruim");
-          break;
-        }
+        if(json == "Erro de Servico") break;
         StaticJsonDocument<200> doc;
         deserializeJson(doc, json);
+
+        nomeOrg = getHTTP("general/nome");
         
-        int h = doc["h"];
-        int m = doc["m"];
-        int s = doc["s"];
+        int h = doc["h"]; int m = doc["m"]; int s = doc["s"];
         int wk = doc["wk"];
-        int d = doc["d"];
-        int mth = doc["mth"];
-        int a = doc["a"];
+        int d = doc["d"]; int mth = doc["mth"]; int a = doc["a"];
         
         myRTC.setDS1302Time(s, m, h, wk, d, mth, a); // Inicializa o RTC
+
+        lcdPrint("Data ajustada!", 1, 0, 1000);
         break;
   }
 
@@ -145,7 +163,8 @@ void loop() {
 
   // ### Tela 2: Menu 1 -
   if (digitalRead(D0) == 1) {
-    lcd.setBacklight(HIGH);
+    lcd.setBacklight(HIGH); contLight = 0;
+    
     Serial.println("1 - Registrar Horário");
     lcdPrint("1: Registro", 1, 1, 0);
     flagChoice = 1;
@@ -165,7 +184,7 @@ void loop() {
           // ### Tela 4: Menu 3 -
           if (digitalRead(D0) == 1) {
             Serial.println("3 - Atualiza Hora");
-            lcdPrint("3: Atualiza Hora", 1, 1, 0);
+            lcdPrint("3: Atualizar", 1, 1, 0);
             flagChoice = 3;
             delay(300);
             for (int k = 0; k < 10; k++) {
@@ -174,13 +193,10 @@ void loop() {
               // ### Tela 5: Menu 4 -
               if (digitalRead(D0) == 1) {
                 Serial.println("4 - Voltar");
-                lcdPrint("4: Voltar", 1, 0, 0);
+                lcdPrint("4: Voltar", 1, 1, 0);
                 flagChoice = 4;
-                delay(300);
-                for (int k = 0; k < 1; k++) {
-                  delay(100);
-                  break;
-                }
+                delay(2000);
+                break;
               } // ### END: Tela 5
             }
           } // ### END: Tela 4
@@ -238,17 +254,18 @@ String getHTTP(String path) {
     HTTPClient http;
     String payload;
     
-    http.begin("http://192.168.25.18:8080/" + path); //Specify the URL
-    int httpCode = http.GET();                                        //Make the request
+    http.begin("http://192.168.25.18:8080/" + path);
+    int httpCode = http.GET();
     
-    if (httpCode > 0) { //Check for the returning code
+    if (httpCode > 0) {
         payload = http.getString();
         Serial.println(httpCode);
         Serial.println(payload);
     } else {
         Serial.println("Error on HTTP request");
+        lcdPrint("Erro: " + path, 1, 1, 1000);
         http.end();
-        return "bad";
+        return "Erro de Servico";
     }
     
     http.end(); //Free the resources
@@ -264,31 +281,39 @@ void lcdPrint(String texto, int pos, int fixo, int tempo) {
     if(total < 0) total = 0;
     
     for(int i = 0; i <= total; i++){
-      
-        lcd.setCursor(0,pos);
-        lcd.print("                ");
-        lcd.setCursor(0,pos);
-        lcd.print(texto);
+        lcd.setCursor(0,pos); lcd.print("                ");
+        lcd.setCursor(0,pos); lcd.print(texto);
     
-        delay(tempo);
+        delayButton(500);
     
         texto.remove(0,1);
     }
 
+    delayButton(tempo);
+
     if(!fixo) {
-        delay(1000);
+        delayButton(1000);
         lcd.setCursor(0,1);
         lcd.print("                ");
     }
     
 }
 
+void delayButton(int tempo) {
+  tempo = tempo / 10;
+  for(int k = 0; k < tempo; k++) {
+    delay(10);
+    if (digitalRead(D0) == 1)
+      return;
+  }
+}
+
 // ############### Funções RTC
-void rtc() {
+String rtc() {
   // Le as informacoes do CI
   myRTC.updateTime();
 
-  String fullData = "Data : ";
+  String fullData = "";
   data = "";
 
   data.concat(myRTC.year);
@@ -305,30 +330,27 @@ void rtc() {
   data.concat(".000");
   
   fullData.concat(imprime_dia_da_semana(myRTC.dayofweek));
-  fullData.concat(", ");
   fullData.concat(myRTC.dayofmonth);
   fullData.concat("/");
   fullData.concat(myRTC.month);
-  fullData.concat("/");
-  fullData.concat(myRTC.year);
-  fullData.concat(myRTC.hours < 10 ? ", Hora : 0" : ", Hora : ");
+  fullData.concat(myRTC.hours < 10 ? " 0" : " ");
   fullData.concat(myRTC.hours);
   fullData.concat(myRTC.minutes < 10 ? ":0" : ":");
   fullData.concat(myRTC.minutes);
-  fullData.concat(myRTC.seconds < 10 ? ":0" : ":");
-  fullData.concat(myRTC.seconds);
 
   Serial.println(fullData + "\n");
+
+  return fullData;
 }
 
 String imprime_dia_da_semana(int dia) {
   switch(dia) {
-    case 1: return "Domingo";
-    case 2: return "Segunda";
-    case 3: return "Terca";
-    case 4: return "Quarta";
-    case 5: return "Quinta";
-    case 6: return "Sexta";
-    case 7: return "Sabado";
+    case 1: return "Dom, ";
+    case 2: return "Seg, ";
+    case 3: return "Ter, ";
+    case 4: return "Qua, ";
+    case 5: return "Qui, ";
+    case 6: return "Sex, ";
+    case 7: return "Sab, ";
   }
 }

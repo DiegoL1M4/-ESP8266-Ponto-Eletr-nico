@@ -38,3 +38,4 @@ CREATE TABLE generalsetup (
 );
 
 INSERT INTO generalsetup (nome, valor) VALUES ('nome_empresa','Nome da Empresa');
+dom, 10/08-08:52
