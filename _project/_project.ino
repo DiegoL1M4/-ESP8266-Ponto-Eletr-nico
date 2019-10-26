@@ -64,14 +64,6 @@ void setup() {
   pinMode(D0, INPUT);
 
   // Nome da empresa
-  /*String json = getHTTP("general/nome");
-        
-  if(json == "bad") {
-    Serial.println("Deu ruim");
-  }
-  StaticJsonDocument<200> doc;
-  deserializeJson(doc, json);*/
-
   nome = getHTTP("general/nome");
   
 }
@@ -155,6 +147,7 @@ void loop() {
   if (digitalRead(D0) == 1) {
     lcd.setBacklight(HIGH);
     Serial.println("1 - Registrar Horário");
+    lcdPrint("1: Registro", 1, 1, 0);
     flagChoice = 1;
     delay(300);
     for (int k = 0; k < 10; k++) {
@@ -163,6 +156,7 @@ void loop() {
       // ### Tela 3: Menu 2 -
       if (digitalRead(D0) == 1) {
         Serial.println("2 - Cadastrar Usuário");
+        lcdPrint("2: Cadastrar", 1, 1, 0);
         flagChoice = 2;
         delay(300);
         for (int k = 0; k < 10; k++) {
@@ -170,7 +164,8 @@ void loop() {
 
           // ### Tela 4: Menu 3 -
           if (digitalRead(D0) == 1) {
-            Serial.println("3 - Modificar Hora");
+            Serial.println("3 - Atualiza Hora");
+            lcdPrint("3: Atualiza Hora", 1, 1, 0);
             flagChoice = 3;
             delay(300);
             for (int k = 0; k < 10; k++) {
@@ -179,6 +174,7 @@ void loop() {
               // ### Tela 5: Menu 4 -
               if (digitalRead(D0) == 1) {
                 Serial.println("4 - Voltar");
+                lcdPrint("4: Voltar", 1, 0, 0);
                 flagChoice = 4;
                 delay(300);
                 for (int k = 0; k < 1; k++) {
@@ -216,26 +212,6 @@ void leitura_tag_RFID() {
   }
   tag_RFID.toUpperCase();
   tag_RFID = tag_RFID.substring(1);
-}
-
-void verificacao() {
-  if(found) {
-    lcd.setBacklight(HIGH);
-
-    Serial.print("Correto");
-    delay(2000); //intervalo de 1s
-    lcd.setBacklight(LOW);
-  } else {
-    lcd.setBacklight(HIGH);
-
-    lcdPrint("Erro", 0, 0);
-
-    Serial.print("Erro");
-
-    delay(2000); //intervalo de 1s
-    lcd.setBacklight(LOW);
-  }
-  found = 0;
 }
 
 
@@ -283,7 +259,7 @@ String getHTTP(String path) {
 
 
 // ############### Funções LCD
-void lcdPrint(String texto, int pos, int fixo) {
+void lcdPrint(String texto, int pos, int fixo, int tempo) {
     int total = texto.length() - 16;
     if(total < 0) total = 0;
     
@@ -294,7 +270,7 @@ void lcdPrint(String texto, int pos, int fixo) {
         lcd.setCursor(0,pos);
         lcd.print(texto);
     
-        delay(700);
+        delay(tempo);
     
         texto.remove(0,1);
     }

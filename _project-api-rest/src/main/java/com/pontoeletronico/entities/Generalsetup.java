@@ -9,7 +9,7 @@ import javax.persistence.Id;
 public class Generalsetup {
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id_setup;
+	private Long id_setup;
 	private String nome;
 	private String valor;
 	
@@ -20,10 +20,10 @@ public class Generalsetup {
 		this.valor = valor;
 	}
 	
-	public int getId_setup() {
+	public Long getId_setup() {
 		return id_setup;
 	}
-	public void setId_setup(int id_setup) {
+	public void setId_setup(Long id_setup) {
 		this.id_setup = id_setup;
 	}
 	public String getNome() {
