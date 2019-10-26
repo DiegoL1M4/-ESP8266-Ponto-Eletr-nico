@@ -1,0 +1,14 @@
+
+Requisitos do ESP:
+	Cadastrar Usuários
+	Registrar Horários
+
+Requisitos SPA:
+	Ver todos os Usuários
+	Ver todos os Registros
+
+Gerais:
+	Obter nome da empresa
+	Verificar a existência de cartão
+	Limitar a 4 registros por dia
+	Carregar a data do banco
