@@ -4,10 +4,11 @@ CREATE TABLE usuario (
 	id_usuario serial,
 	nome varchar(100),
 	tagRFID varchar(8),
+	dataCriacao timestamp,
 	PRIMARY KEY(id_usuario)
 );
 
-INSERT INTO usuario (nome, tagRFID) VALUES ('Diego Lima', '2C8FAA59');
+INSERT INTO usuario (nome, tagRFID) VALUES ('Diego Lima', '2C8FAA59', now());
 
 CREATE TABLE tipo (
 	id_tipo integer,

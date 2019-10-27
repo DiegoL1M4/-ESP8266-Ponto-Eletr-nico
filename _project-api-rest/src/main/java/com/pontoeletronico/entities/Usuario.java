@@ -1,5 +1,7 @@
 package com.pontoeletronico.entities;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,12 +14,14 @@ public class Usuario {
 	private int id_usuario;
 	private String nome;
 	private String tagRFID;
+	private LocalDateTime data;
 	
 	public Usuario() { }
 	
 	public Usuario(String nome, String tagRFID) {
 		this.nome = nome;
 		this.tagRFID = tagRFID;
+		this.data = LocalDateTime.now();
 	}
 	
 	public int getId_usuario() {
@@ -38,5 +42,11 @@ public class Usuario {
 	public void setTagRFID(String tagRFID) {
 		this.tagRFID = tagRFID;
 	}
-	
+	public LocalDateTime getData() {
+		return data;
+	}
+	public void setData(LocalDateTime data) {
+		this.data = data;
+	}
+
 }
