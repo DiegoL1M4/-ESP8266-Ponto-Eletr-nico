@@ -15,6 +15,7 @@ public class Registro {
 	private String tagRfid;
 	private long id_tipo;
 	private LocalDateTime data;
+	private LocalDateTime hora;
 	
 	public Registro() { }
 	
@@ -22,13 +23,13 @@ public class Registro {
 		this.tagRfid = tagRfid;
 		this.id_tipo = id_tipo;
 		this.data = data;
+		this.hora = data;
 	}
 
-	public String getTag_rfid() {
+	public String getTagRfid() {
 		return tagRfid;
 	}
-
-	public void setTag_rfid(String tagRfid) {
+	public void setTagRfid(String tagRfid) {
 		this.tagRfid = tagRfid;
 	}
 	public int getId_registro() {
@@ -48,6 +49,13 @@ public class Registro {
 	}
 	public void setData(LocalDateTime data) {
 		this.data = data;
+	}
+	public LocalDateTime getHora() {
+		return hora;
+	}
+
+	public void setHora(LocalDateTime hora) {
+		this.hora = hora;
 	}
 	
 }

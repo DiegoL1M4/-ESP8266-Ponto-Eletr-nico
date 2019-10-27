@@ -26,6 +26,7 @@ CREATE TABLE registro (
 	tagRFID varchar(8),
 	id_tipo int,
 	data date,
+	hora time,
 	PRIMARY KEY(id_registro),
 	FOREIGN KEY (id_tipo) REFERENCES tipo(id_tipo)
 );
