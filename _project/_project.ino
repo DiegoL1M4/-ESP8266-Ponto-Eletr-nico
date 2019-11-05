@@ -81,7 +81,7 @@ void loop() {
   
   switch (flagChoice) {
     case 0: // Tela 1
-        if (cont == 10) {
+        if (cont == 50) {
           Serial.println(nomeOrg);
           lcdPrint(nomeOrg, 0, 1, 0);
           cont = 0;
@@ -107,6 +107,8 @@ void loop() {
             int code = postHTTP("registro", json);
             if(code == 700)
               lcdPrint("Dia finalizado!", 1, 0, 1500);
+            else if (code == 800)
+              lcdPrint("Nao Cadastrado!", 1, 0, 1500);
             else if (code == 201)
               lcdPrint("Registrado!", 1, 0, 1500);
             else
@@ -153,7 +155,7 @@ void loop() {
         
         myRTC.setDS1302Time(s, m, h, wk, d, mth, a); // Inicializa o RTC
 
-        lcdPrint("Data ajustada!", 1, 0, 1000);
+        lcdPrint("Sistema ajustado!", 1, 0, 1000);
         break;
   }
 

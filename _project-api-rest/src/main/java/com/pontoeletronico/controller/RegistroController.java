@@ -18,13 +18,19 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pontoeletronico.controller.form.RegistroForm;
 import com.pontoeletronico.entities.Registro;
+import com.pontoeletronico.entities.Usuario;
 import com.pontoeletronico.repository.RegistroRepository;
+import com.pontoeletronico.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping("registro")
 public class RegistroController {
+	
 	@Autowired
 	private RegistroRepository registroRepository;
+	
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 	
 	@GetMapping
 	public List<Registro> lista() {
@@ -33,7 +39,13 @@ public class RegistroController {
 	
 	@PostMapping
 	@Transactional
-	public ResponseEntity<Registro> cadastrar(@RequestBody @Valid RegistroForm form, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity<Registro> registrar(@RequestBody @Valid RegistroForm form, UriComponentsBuilder uriBuilder) {
+		
+		Usuario userTest = usuarioRepository.findByTagRFID(form.getTagRFID());
+		
+		if(userTest == null)
+			return ResponseEntity.status(800).body(new Registro());
+		
 		long contReg = registroRepository.countByDataAndTagRfid(LocalDateTime.now(), form.getTagRFID());
 		
 		if(contReg < 4) {
