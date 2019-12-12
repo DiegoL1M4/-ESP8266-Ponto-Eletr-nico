@@ -52,7 +52,7 @@ void setup() {
       delay(500);
       Serial.print("."); // Enquanto a ligação não for efectuada com sucesso é apresentado no monitor série uma sucessão de “.”
 
-      if(cont == 50)
+      if(cont == 10)
         break;
   }
   if(WiFi.status() == WL_CONNECTED) {
@@ -106,18 +106,18 @@ void loop() {
             String json = "{\"tagRFID\": \"" + tag_RFID + "\", \"data\": \"" + data + "\"}";
             int code = postHTTP("registro", json);
             if(code == 700)
-              lcdPrint("Dia finalizado!", 1, 0, 1500);
+              lcdPrint("Dia finalizado!", 1, 0, 1000);
             else if (code == 800)
-              lcdPrint("Nao Cadastrado!", 1, 0, 1500);
+              lcdPrint("Nao Cadastrado!", 1, 0, 1000);
             else if (code == 201)
-              lcdPrint("Registrado!", 1, 0, 1500);
+              lcdPrint("Registrado!", 1, 0, 1000);
             else
-              lcdPrint("Erro no registro", 1, 0, 1500);
+              lcdPrint("Erro no registro", 1, 0, 1000);
             break;
           }
         }
         Serial.println("Finalizando");
-        lcdPrint("Finalizando...", 1, 1, 1000);
+        lcdPrint("Finalizando...", 1, 1, 500);
         break;
     case 2: // Tela 3
         Serial.println("Aproxime o cartão!");
@@ -139,11 +139,11 @@ void loop() {
           }
         }
         Serial.println("Finalizando");
-        lcdPrint("Finalizando...", 1, 1, 1000);
+        lcdPrint("Finalizando...", 1, 1, 500);
         break;
     case 3: // Tela 4
         String json = getHTTP("general/data");
-        if(json == "Erro de Servico") break;
+        if(json == "Erro no Servidor") break;
         StaticJsonDocument<200> doc;
         deserializeJson(doc, json);
 
@@ -155,7 +155,7 @@ void loop() {
         
         myRTC.setDS1302Time(s, m, h, wk, d, mth, a); // Inicializa o RTC
 
-        lcdPrint("Sistema ajustado!", 1, 0, 1000);
+        lcdPrint("Sistema Ajustado", 1, 0, 1000);
         break;
   }
 
@@ -163,49 +163,55 @@ void loop() {
   flagChoice = 0;
   tag_RFID = "";
 
-  // ### Tela 2: Menu 1 -
   if (digitalRead(D0) == 1) {
     lcd.setBacklight(HIGH); contLight = 0;
-    
-    Serial.println("1 - Registrar Horário");
-    lcdPrint("1: Registro", 1, 1, 0);
-    flagChoice = 1;
-    delay(300);
+
     for (int k = 0; k < 10; k++) {
       delay(100);
-
-      // ### Tela 3: Menu 2 -
+      
+      // ### Tela 2: Menu 1 - Registrar Horário
       if (digitalRead(D0) == 1) {
-        Serial.println("2 - Cadastrar Usuário");
-        lcdPrint("2: Cadastrar", 1, 1, 0);
-        flagChoice = 2;
+        Serial.println("1 - Registrar Horário");
+        lcdPrint("1: Registro", 1, 1, 0);
+        flagChoice = 1;
         delay(300);
         for (int k = 0; k < 10; k++) {
           delay(100);
-
-          // ### Tela 4: Menu 3 -
+    
+          // ### Tela 3: Menu 2 - Cadastrar Usuário
           if (digitalRead(D0) == 1) {
-            Serial.println("3 - Atualiza Hora");
-            lcdPrint("3: Atualizar", 1, 1, 0);
-            flagChoice = 3;
+            Serial.println("2 - Cadastrar Usuário");
+            lcdPrint("2: Cadastrar", 1, 1, 0);
+            flagChoice = 2;
             delay(300);
             for (int k = 0; k < 10; k++) {
               delay(100);
-
-              // ### Tela 5: Menu 4 -
+    
+              // ### Tela 4: Menu 3 - Atualiza Hora
               if (digitalRead(D0) == 1) {
-                Serial.println("4 - Voltar");
-                lcdPrint("4: Voltar", 1, 1, 0);
-                flagChoice = 4;
-                delay(2000);
-                break;
-              } // ### END: Tela 5
+                Serial.println("3 - Atualiza Hora");
+                lcdPrint("3: Atualizar", 1, 1, 0);
+                flagChoice = 3;
+                delay(300);
+                for (int k = 0; k < 10; k++) {
+                  delay(100);
+    
+                  // ### Tela 5: Menu 4 - Voltar
+                  if (digitalRead(D0) == 1) {
+                    Serial.println("4 - Voltar");
+                    lcdPrint("4: Voltar", 1, 1, 0);
+                    flagChoice = 4;
+                    delay(2000);
+                    break;
+                  } // ### END: Tela 5
+                }
+              } // ### END: Tela 4
             }
-          } // ### END: Tela 4
+          }// ### END: Tela 3
         }
-      }// ### END: Tela 3
+      } // ### END: Tela 2
     }
-  } // ### END: Tela 2
+  }
 
 }
 
